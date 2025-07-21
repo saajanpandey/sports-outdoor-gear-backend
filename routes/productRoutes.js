@@ -1,11 +1,13 @@
 const express = require("express");
-const path = require("path");
 const multer = require("multer");
+const path = require("path");
 const fs = require("fs");
-const router = express.Router();
-const categoryController = require("../controllers/categoryController");
+const productController = require("../controllers/productController");
 
-const dir = "./uploads/category/images/";
+const router = express.Router();
+
+// Create uploads folder if not exist
+const dir = "./uploads/products/images";
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -13,7 +15,7 @@ if (!fs.existsSync(dir)) {
 // Multer config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/category/images/");
+    cb(null, "uploads/products/images");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -38,10 +40,10 @@ const upload = multer({
 });
 
 // Routes
-router.post("/", upload.single("image"), categoryController.createCategory);
-router.get("/", categoryController.getAllCategory);
-router.get("/:name", categoryController.getCategoryByName);
-router.put("/:id", upload.single("image"), categoryController.updateCategory);
-router.delete("/:id", categoryController.deleteCategory);
+router.post("/", upload.single("image"), productController.createProduct);
+router.get("/", productController.getAllProducts);
+router.get("/:id", productController.getProductById);
+router.put("/:id", upload.single("image"), productController.updateProduct);
+router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;

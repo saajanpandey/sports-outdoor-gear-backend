@@ -4,7 +4,12 @@ module.exports = {
   // This creates a new category
   createCategory: async function (req, res) {
     try {
-      const category = new Category(req.body);
+      const { name } = req.body;
+      const image = req.file
+        ? `/uploads/category/images/${req.file.filename}`
+        : null;
+
+      const category = new Category({ name, image });
       await category.save();
       res.status(201).json({ message: "Category Created Successfully" });
     } catch (error) {
@@ -27,7 +32,7 @@ module.exports = {
     try {
       const category = await Category.findById(req.params.name);
       if (!category)
-        return res.status(404).json({ message: "Category not found" });
+        return res.status(404).json({ message: "Category Not Found" });
       res.json({ data: category });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -37,17 +42,31 @@ module.exports = {
   // This updates the category  by id
   updateCategory: async function (req, res) {
     try {
-      const updates = req.body;
-      const category = await Category.findByIdAndUpdate(
+      const { name } = req.body;
+
+      const image = req.file
+        ? `/uploads/category/images/${req.file.filename}`
+        : undefined;
+
+      const updatedData = {
+        name,
+      };
+
+      if (image) {
+        updatedData.image = image;
+      }
+
+      const updatedProduct = await Category.findByIdAndUpdate(
         req.params.id,
-        updates,
-        {
-          new: true,
-        }
+        updatedData,
+        { new: true }
       );
-      if (!category)
-        return res.status(404).json({ message: "Category not found" });
-      res.json({ message: "Category updated successfully" });
+
+      if (!updatedProduct) {
+        return res.status(404).json({ message: "Category Not Found" });
+      }
+
+      res.status(201).json({ message: "Category Updated Successfully" });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
