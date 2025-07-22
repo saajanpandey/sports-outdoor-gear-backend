@@ -82,4 +82,29 @@ module.exports = {
       res.status(500).json({ message: "Server error" });
     }
   },
+  adminLoginUser: async function (req, res) {
+    const { email, password } = req.body;
+
+    try {
+      const user = await User.findOne({ email });
+
+      if (user.role != 1) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      if (!user || user.password !== password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      res.json({
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  },
 };
