@@ -76,6 +76,16 @@ module.exports = {
   deleteCategory: async function (req, res) {
     try {
       const category = await Category.findByIdAndDelete(req.params.id);
+      if (category.image) {
+        const url = __dirname;
+        const clean = url.replace("/controllers", "");
+        const imagePath = path.join(clean, category.image);
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.error("Failed to delete image:", err);
+          }
+        });
+      }
       if (!category)
         return res.status(404).json({ message: "Category not found" });
       res.json({ message: "Category deleted successfully" });

@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const path = require("path");
+const fs = require("fs");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -134,8 +135,18 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const deleted = await Product.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Product not found" });
+    const item = await Product.findByIdAndDelete(req.params.id);
+    if (item.image) {
+      const url = __dirname;
+      const clean = url.replace("/controllers", "");
+      const imagePath = path.join(clean, item.image);
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Failed to delete image:", err);
+        }
+      });
+    }
+    if (!item) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     res
