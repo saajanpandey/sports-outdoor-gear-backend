@@ -21,9 +21,13 @@ mongoose
   .then(() => console.log("Connected to MongoDb"))
   .catch((err) => console.log("MongoDb connection error:", err));
 
+// The user routes
 app.use("/api/user", userRoutes);
 
+// the category routes
 app.use("/api/category", categoryRoutes);
+
+// the products routes
 app.use("/api/product", productRoutes);
 
 app.listen(3000, () => {
