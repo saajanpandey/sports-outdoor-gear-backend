@@ -59,7 +59,11 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().populate("category");
-    res.json(products);
+    const imageUrl = `http://localhost:3000${product.image}`;
+
+    const productObj = product.toObject();
+    productObj.image = imageUrl;
+    res.json(productObj);
   } catch (error) {
     res.status(500).json({ message: "Error fetching products", error });
   }
@@ -69,7 +73,12 @@ exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");
     if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json(product);
+    const imageUrl = `http://localhost:3000${product.image}`;
+
+    const productObj = product.toObject();
+    productObj.image = imageUrl;
+
+    res.json(productObj);
   } catch (error) {
     res
       .status(400)
