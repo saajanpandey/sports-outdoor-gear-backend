@@ -21,7 +21,15 @@ module.exports = {
   getAllCategory: async function (req, res) {
     try {
       const categories = await Category.find();
-      res.json({ data: categories });
+      const categoriesWithImageUrl = categories.map((category) => {
+        const categoryObj = category.toObject();
+
+        category.image = `http://localhost:3000${category.image}`;
+
+        return categoryObj;
+      });
+
+      res.json(categoriesWithImageUrl);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -33,7 +41,12 @@ module.exports = {
       const category = await Category.findById(req.params.name);
       if (!category)
         return res.status(404).json({ message: "Category Not Found" });
-      res.json({ data: category });
+      const imageUrl = `http://localhost:3000${category.image}`;
+
+      const categoryObj = category.toObject();
+      categoryObj.image = imageUrl;
+
+      res.json({ data: categoryObj });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
