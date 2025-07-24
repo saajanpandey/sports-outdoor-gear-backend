@@ -1,12 +1,42 @@
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 module.exports = {
   // This creates a new user
   createUser: async function (req, res) {
     try {
-      const user = new User(req.body);
-      await user.save();
-      res.status(201).json({ message: "User Profile Created Successfully" });
+      const { first_name, last_name, address, phone, email, password, role } =
+        req.body;
+      const checkEmail = await User.findOne({ email });
+      if (checkEmail) {
+        res.status(400).json({ message: "Email already in use." });
+      }
+      bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
+        if (err) {
+          console.error("Error hashing password:", err);
+          return res.status(500).json({ message: "Error hashing password" });
+        }
+        const user = new User({
+          first_name,
+          last_name,
+          address,
+          phone,
+          email,
+          password: hashedPassword,
+          role,
+        });
+
+        try {
+          await user.save();
+          res
+            .status(201)
+            .json({ message: "User Profile Created Successfully" });
+        } catch (saveErr) {
+          console.error("Error saving user:", saveErr);
+          res.status(500).json({ message: "Error saving user" });
+        }
+      });
     } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.message });
@@ -66,17 +96,25 @@ module.exports = {
 
     try {
       const user = await User.findOne({ email });
-
-      if (!user || user.password !== password) {
+      if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      res.json({
-        _id: user._id,
-        email: user.email,
-        role: user.role,
-        first_name: user.first_name,
-        last_name: user.last_name,
+      bcrypt.compare(password, user.password, async (err, result) => {
+        if (err) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        if (result) {
+          res.json({
+            _id: user._id,
+            email: user.email,
+            role: user.role,
+            first_name: user.first_name,
+            last_name: user.last_name,
+          });
+        } else {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
       });
     } catch (error) {
       res.status(500).json({ message: "Server error" });
@@ -88,20 +126,25 @@ module.exports = {
     try {
       const user = await User.findOne({ email });
 
-      if (user.role != 1) {
+      if (user.role != 1 || !user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      if (!user || user.password !== password) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      res.json({
-        _id: user._id,
-        email: user.email,
-        role: user.role,
-        first_name: user.first_name,
-        last_name: user.last_name,
+      bcrypt.compare(password, user.password, async (err, result) => {
+        if (err) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        if (result) {
+          res.json({
+            _id: user._id,
+            email: user.email,
+            role: user.role,
+            first_name: user.first_name,
+            last_name: user.last_name,
+          });
+        } else {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
       });
     } catch (error) {
       res.status(500).json({ message: "Server error" });
