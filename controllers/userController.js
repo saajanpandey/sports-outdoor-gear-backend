@@ -67,7 +67,7 @@ module.exports = {
   // This updates the user  by id
   updateUser: async function (req, res) {
     try {
-      const { role, password, ...updateData } = req.body;
+      const { role, password, email, ...updateData } = req.body;
       const user = await User.findByIdAndUpdate(
         req.params.id,
         { $set: updateData },
