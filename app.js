@@ -30,6 +30,8 @@ app.use("/api/category", categoryRoutes);
 // the products routes
 app.use("/api/product", productRoutes);
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.listen(3000, () => {
   console.log(`Server is running on port ${port}`);
 });
