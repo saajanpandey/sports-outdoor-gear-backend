@@ -76,6 +76,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");
+    console.log(product);
     if (!product) return res.status(404).json({ message: "Product not found" });
     const imageUrl = `http://localhost:3000${product.image}`;
 
@@ -165,5 +166,25 @@ exports.deleteProduct = async (req, res) => {
     res
       .status(400)
       .json({ message: "Failed to delete product", error: error.message });
+  }
+};
+
+exports.getProductByCategoryName = async (req, res) => {
+  try {
+    const category = await Category.findOne({
+      name: new RegExp("^" + req.params.category + "$", "i"),
+    });
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const products = await Product.find({
+      category: category._id,
+    }).populate("category");
+
+    res.json(products);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

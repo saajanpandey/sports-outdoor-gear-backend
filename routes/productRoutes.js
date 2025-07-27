@@ -46,4 +46,6 @@ router.get("/:id", productController.getProductById);
 router.put("/:id", upload.single("image"), productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
 
+router.get("/category/:category", productController.getProductByCategoryName);
+
 module.exports = router;
