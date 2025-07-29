@@ -76,7 +76,6 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");
-    console.log(product);
     if (!product) return res.status(404).json({ message: "Product not found" });
     const imageUrl = `http://localhost:3000${product.image}`;
 
