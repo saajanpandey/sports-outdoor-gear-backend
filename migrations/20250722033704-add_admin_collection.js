@@ -14,7 +14,7 @@ module.exports = {
       first_name: "Admin",
       last_name: "User",
       email: "admin@admin.com",
-      password: "$2a$10$lRG.sN74CAVnSBG/1aj2V.8w1PdlqpaqEsIzGjtDJF3L8UtHmgsem",
+      password: "$2a$10$/UDGDEafaHu.Xl0ScrS1GOMaUtXHr/YobxIlWp6dZGCFo3/X.Uu4W", //admin123
       address: "Address",
       phone: 1111111111,
       role: 1,
