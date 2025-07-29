@@ -1,4 +1,6 @@
 const Category = require("../models/Category");
+const path = require("path");
+const fs = require("fs");
 
 module.exports = {
   // This creates a new category
